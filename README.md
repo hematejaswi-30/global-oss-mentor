@@ -49,3 +49,27 @@
 
 ## 📜 License
 This project is licensed under the MIT License - ensuring it remains free and open-source for the community!
+
+## 🎮 How to Demo the PR Simulator
+
+Want to see the AI Mentor in action? Scroll down to the **PR Simulator** on the live site and try these two scenarios to see how it grades your open-source etiquette.
+
+### Scenario 1: The "Bad" PR (Watch the AI correct you)
+* **Pull Request Title:** `Update code`
+* **Pull Request Description:** `I fixed some bugs.`
+* **Expected Result:** The AI will politely reject this, explaining that the title is too vague, the description lacks detail, and there are no testing instructions. This solves the psychological barrier of making mistakes on real repositories!
+
+### Scenario 2: The "Good" PR (Watch the AI approve)
+* **Pull Request Title:** `Fix spelling typo in README.md`
+* **Pull Request Description:** *(Click "+ Insert Standard Template" and fill it out like this)*
+  ```text
+  ## What does this PR do?
+  - Fixed a typo where "Android" was spelled "Andriod" in the installation section.
+
+  ## Fixes Issue
+  Closes #12
+
+  ## Testing Instructions
+  1. Read the installation paragraph to verify the spelling is correct.
+  ```
+* **Expected Result:** The AI will praise you for following open-source etiquette, linking an issue, and providing clear testing details.
