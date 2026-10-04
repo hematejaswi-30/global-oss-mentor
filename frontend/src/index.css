@@ -1,111 +1,249 @@
 :root {
-  --text: #6b6375;
-  --text-h: #08060d;
-  --bg: #fff;
-  --border: #e5e4e7;
-  --code-bg: #f4f3ec;
-  --accent: #aa3bff;
-  --accent-bg: rgba(170, 59, 255, 0.1);
-  --accent-border: rgba(170, 59, 255, 0.5);
-  --social-bg: rgba(244, 243, 236, 0.5);
-  --shadow:
-    rgba(0, 0, 0, 0.1) 0 10px 15px -3px, rgba(0, 0, 0, 0.05) 0 4px 6px -2px;
-
-  --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --heading: system-ui, 'Segoe UI', Roboto, sans-serif;
-  --mono: ui-monospace, Consolas, monospace;
-
-  font: 18px/145% var(--sans);
-  letter-spacing: 0.18px;
-  color-scheme: light dark;
-  color: var(--text);
-  background: var(--bg);
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-
-  @media (max-width: 1024px) {
-    font-size: 16px;
-  }
+  --bg-dark: #0F0A1F;
+  --card-bg: #1A1233;
+  --card-input-bg: #251A47;
+  --border-color: #3A2B66;
+  --neon-lime: #C6FF3D;
+  --purple-accent: #8B5CF6;
+  --purple-light: #C4B5FD;
+  --text-main: #F4F1FF;
+  --text-muted: #A79FC9;
+  --font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --text: #9ca3af;
-    --text-h: #f3f4f6;
-    --bg: #16171d;
-    --border: #2e303a;
-    --code-bg: #1f2028;
-    --accent: #c084fc;
-    --accent-bg: rgba(192, 132, 252, 0.15);
-    --accent-border: rgba(192, 132, 252, 0.5);
-    --social-bg: rgba(47, 48, 58, 0.5);
-    --shadow:
-      rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
-
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+* {
+  box-sizing: border-box;
 }
 
 body {
   margin: 0;
+  padding: 0;
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: var(--font-family);
+  -webkit-font-smoothing: antialiased;
 }
 
 #root {
-  width: 1126px;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: center;
-  border-inline: 1px solid var(--border);
-  min-height: 100svh;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.oss-window {
+  background: var(--bg-dark);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+  max-width: 1100px;
+  margin: 20px auto;
+}
+
+.oss-header-bar {
   display: flex;
-  flex-direction: column;
-  box-sizing: border-box;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #1A1233;
+  border-bottom: 0.5px solid var(--border-color);
 }
 
-h1,
-h2 {
-  font-family: var(--heading);
-  font-weight: 500;
-  color: var(--text-h);
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #3A2B66;
 }
 
-h1 {
-  font-size: 56px;
-  letter-spacing: -1.68px;
-  margin: 32px 0;
-  @media (max-width: 1024px) {
-    font-size: 36px;
-    margin: 20px 0;
-  }
-}
-h2 {
-  font-size: 24px;
-  line-height: 118%;
-  letter-spacing: -0.24px;
-  margin: 0 0 8px;
-  @media (max-width: 1024px) {
-    font-size: 20px;
-  }
-}
-p {
-  margin: 0;
+.url-bar {
+  flex: 1;
+  margin-left: 12px;
+  background: var(--bg-dark);
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text-muted);
 }
 
-code,
-.counter {
-  font-family: var(--mono);
+.oss-navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  border-bottom: 0.5px solid rgba(58, 43, 102, 0.4);
+}
+
+.oss-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.oss-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.oss-nav-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.oss-nav-links a:hover {
+  color: var(--neon-lime);
+}
+
+.btn-github-auth {
+  border: 0.5px solid var(--purple-accent);
+  color: var(--text-main);
+  background: transparent;
+  border-radius: 8px;
+  padding: 6px 14px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-github-auth:hover {
+  background: rgba(139, 92, 246, 0.2);
+  border-color: var(--neon-lime);
+}
+
+.badge-hacktoberfest {
   display: inline-flex;
-  border-radius: 4px;
-  color: var(--text-h);
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--neon-lime);
+  border: 0.5px solid var(--border-color);
+  background: var(--card-bg);
+  border-radius: 20px;
+  padding: 4px 14px;
 }
 
-code {
-  font-size: 15px;
-  line-height: 135%;
-  padding: 4px 8px;
-  background: var(--code-bg);
+.btn-neon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--neon-lime);
+  color: #0F0A1F;
+  font-weight: 600;
+  font-size: 14px;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 24px;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease;
+}
+
+.btn-neon:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 15px rgba(198, 255, 61, 0.3);
+  filter: brightness(1.05);
+}
+
+.btn-neon:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.repo-card {
+  background: var(--card-bg);
+  border: 0.5px solid var(--border-color);
+  border-radius: 12px;
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+}
+
+.repo-card:hover, .repo-card.active {
+  border-color: var(--neon-lime);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(198, 255, 61, 0.15);
+}
+
+.badge-issue {
+  font-size: 11px;
+  background: var(--neon-lime);
+  color: #0F0A1F;
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-weight: 600;
+}
+
+.badge-lang {
+  font-size: 11px;
+  background: var(--card-input-bg);
+  color: var(--purple-light);
+  border-radius: 6px;
+  padding: 3px 8px;
+}
+
+.workflow-bar {
+  background: var(--card-bg);
+  border-top: 0.5px solid var(--border-color);
+  padding: 20px 24px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+}
+
+.workflow-step {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.workflow-num {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--card-input-bg);
+  border: 0.5px solid var(--purple-accent);
+  color: var(--neon-lime);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+.custom-input {
+  background: var(--card-input-bg);
+  border: 0.5px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  width: 100%;
+}
+
+.custom-input:focus {
+  outline: none;
+  border-color: var(--purple-accent);
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+.custom-select {
+  background: var(--card-input-bg);
+  border: 0.5px solid var(--border-color);
+  color: var(--text-main);
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.custom-select:focus {
+  outline: none;
+  border-color: var(--purple-accent);
 }
