@@ -1,5 +1,6 @@
 import os
 import json
+import time
 import requests
 from flask import Flask, request, jsonify
 from dotenv import load_dotenv
@@ -10,7 +11,13 @@ load_dotenv()
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent"
+
+# High-availability model fallback chain
+FALLBACK_MODELS = [
+    "gemini-flash-latest", 
+    "gemini-pro-latest", 
+    "gemma-4-31b-it"
+]
 
 def fetch_github_readme(repo_url):
     parts = repo_url.rstrip('/').split('/')
@@ -24,6 +31,31 @@ def fetch_github_readme(repo_url):
         if resp.status_code == 200:
             return resp.text, f"{user}/{repo}"
     return None, None
+
+def call_ai(payload):
+    """Bulletproof API caller with automatic fallback and retries."""
+    last_error = "Unknown Error"
+    # Try the entire model chain twice
+    for attempt in range(2):
+        for model in FALLBACK_MODELS:
+            url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={API_KEY}"
+            try:
+                response = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
+                if response.status_code == 200:
+                    resp_data = response.json()
+                    candidates = resp_data.get("candidates", [])
+                    if candidates:
+                        parts = candidates[0].get("content", {}).get("parts", [])
+                        if parts:
+                            return parts[0].get("text", ""), None
+                else:
+                    last_error = f"{response.status_code} from {model}: {response.text}"
+                    # If it's a 503 (high demand) or 500, immediately skip to the next model
+            except Exception as e:
+                last_error = str(e)
+        # Brief pause before second wave of retries
+        time.sleep(1.5)
+    return None, last_error
 
 @app.after_request
 def after_request(response):
@@ -57,33 +89,13 @@ Provide a friendly guide for this user formatted beautifully in Markdown. Includ
 2. **Gap Analysis:** What they need to learn to contribute here.
 3. **Hackathon Sprints:** A 4-step plan to get started.
 """
-
     payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
     
-    try:
-        response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
-        if response.status_code == 200:
-            resp_data = response.json()
-            try:
-                # Safely extract text
-                candidates = resp_data.get("candidates", [])
-                if not candidates:
-                    return jsonify({"error": "AI refused to answer. It might have been flagged by safety filters.", "raw": str(resp_data)}), 500
-                
-                parts = candidates[0].get("content", {}).get("parts", [])
-                if not parts:
-                    return jsonify({"error": "AI returned an empty response.", "raw": str(resp_data)}), 500
-                    
-                text = parts[0].get("text", "")
-                
-                # Just return the raw markdown! No more JSON parsing crashes.
-                return jsonify({"markdown": text})
-            except Exception as e:
-                return jsonify({"error": f"Failed to extract AI response.", "raw": str(resp_data)}), 500
-        else:
-            return jsonify({"error": f"API Error: {response.text}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"Server crash: {str(e)}"}), 500
+    text, error = call_ai(payload)
+    if text:
+        return jsonify({"markdown": text})
+    else:
+        return jsonify({"error": f"API Overloaded. Try again. Log: {error}"}), 503
 
 @app.route("/judge_pr", methods=["POST"])
 def judge_pr():
@@ -100,23 +112,12 @@ Description: {pr_body}
 Provide a short critique (2-3 paragraphs max). Tell them what is good and what is missing (e.g., linked issues, testing instructions, polite tone). Format your response in Markdown.
 """
     payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
-    try:
-        response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
-        if response.status_code == 200:
-            resp_data = response.json()
-            candidates = resp_data.get("candidates", [])
-            if not candidates:
-                return jsonify({"error": "AI refused to evaluate the PR.", "raw": str(resp_data)}), 500
-            parts = candidates[0].get("content", {}).get("parts", [])
-            if not parts:
-                return jsonify({"error": "AI returned an empty evaluation.", "raw": str(resp_data)}), 500
-                
-            text = parts[0].get("text", "")
-            return jsonify({"critique": text})
-        else:
-            return jsonify({"error": f"API Error: {response.text}"}), 500
-    except Exception as e:
-        return jsonify({"error": f"Server crash: {str(e)}"}), 500
+    
+    text, error = call_ai(payload)
+    if text:
+        return jsonify({"critique": text})
+    else:
+        return jsonify({"error": f"API Overloaded. Try again. Log: {error}"}), 503
 
 if __name__ == "__main__":
     app.run(debug=True, port=5000)
