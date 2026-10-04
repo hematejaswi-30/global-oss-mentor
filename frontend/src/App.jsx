@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { marked } from 'marked'; // Assuming marked is still available, if not, we can load it via CDN or standard HTML
 
 function App() {
   const [repoUrl, setRepoUrl] = useState('');
@@ -160,8 +159,7 @@ function App() {
               
               {prError && <div className="alert alert-danger mt-3">{prError}</div>}
               {prCritique && (
-                <div className="mt-4 p-4 bg-secondary rounded">
-                   {prCritique}
+                <div className="mt-4 p-4 bg-secondary rounded" dangerouslySetInnerHTML={{ __html: window.marked ? window.marked.parse(prCritique) : prCritique }}>
                 </div>
               )}
             </div>
