@@ -164,7 +164,7 @@ function App() {
               <input 
                 type="url" 
                 className="form-control custom-input p-3 fs-5 text-white" 
-                placeholder="https://github.com/username/repository" 
+                placeholder="Paste GitHub Repository URL (e.g., https://github.com/pallets/flask)" 
                 value={repoUrl} onChange={e => setRepoUrl(e.target.value)} required 
               />
               <div className="text-gray mt-2 small">
