@@ -10,7 +10,7 @@ load_dotenv()
 app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent"
 
 def fetch_github_readme(repo_url):
     parts = repo_url.rstrip('/').split('/')
