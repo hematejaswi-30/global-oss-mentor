@@ -13,10 +13,10 @@ app = Flask(__name__, static_folder="frontend/dist", static_url_path="/")
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
 # High-availability model fallback chain
+# We are dropping gemma-4-31b-it because Google's backend throws 500s for it under load.
 FALLBACK_MODELS = [
     "gemini-flash-latest", 
-    "gemini-pro-latest", 
-    "gemma-4-31b-it"
+    "gemini-flash-lite-latest"
 ]
 
 def fetch_github_readme(repo_url):
@@ -35,8 +35,8 @@ def fetch_github_readme(repo_url):
 def call_ai(payload):
     """Bulletproof API caller with automatic fallback and retries."""
     last_error = "Unknown Error"
-    # Try the entire model chain twice
-    for attempt in range(2):
+    # Try the entire model chain 3 times
+    for attempt in range(3):
         for model in FALLBACK_MODELS:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={API_KEY}"
             try:
