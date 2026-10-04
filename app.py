@@ -69,16 +69,19 @@ Analyze the user's fit for this project and output ONLY a valid JSON object with
         if response.status_code == 200:
             resp_data = response.json()
             try:
-                text = resp_data["candidates"][0]["content"]["parts"][0]["text"].strip()
-                # Clean markdown blocks if the model includes them
-                if text.startswith("```json"): text = text[7:]
-                if text.startswith("```"): text = text[3:]
-                if text.endswith("```"): text = text[:-3]
+                import re
+                text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
                 
-                parsed_json = json.loads(text.strip())
+                # Robust JSON extraction: Find everything between the first { and last }
+                match = re.search(r'\{.*\}', text, re.DOTALL)
+                if not match:
+                    return jsonify({"error": "Failed to parse AI response into structured JSON.", "raw": text}), 500
+                
+                json_str = match.group(0)
+                parsed_json = json.loads(json_str)
                 return jsonify(parsed_json)
-            except (KeyError, IndexError, json.JSONDecodeError):
-                return jsonify({"error": "Failed to parse AI response into structured JSON.", "raw": text}), 500
+            except (KeyError, IndexError, json.JSONDecodeError) as e:
+                return jsonify({"error": f"Failed to parse AI response. Error: {str(e)}", "raw": text}), 500
         else:
             return jsonify({"error": f"API Error: {response.text}"}), 500
     except Exception as e:
