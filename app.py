@@ -62,7 +62,12 @@ Analyze the user's fit for this project and output ONLY a valid JSON object with
 }}
 """
 
-    payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
+    payload = {
+        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
+        "generationConfig": {
+            "responseMimeType": "application/json"
+        }
+    }
     
     try:
         response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
@@ -75,7 +80,7 @@ Analyze the user's fit for this project and output ONLY a valid JSON object with
                 # Robust JSON extraction: Find everything between the first { and last }
                 match = re.search(r'\{.*\}', text, re.DOTALL)
                 if not match:
-                    return jsonify({"error": "Failed to parse AI response into structured JSON.", "raw": text}), 500
+                    return jsonify({"error": f"AI outputted text instead of data: {text[:100]}..."}), 500
                 
                 json_str = match.group(0)
                 parsed_json = json.loads(json_str)
