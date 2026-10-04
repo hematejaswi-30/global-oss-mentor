@@ -154,30 +154,47 @@ function App() {
           Find beginner-friendly issues and follow a clear path from fork to pull request.
         </p>
 
-        {/* Input Area (Replaces Dropdowns from Image) */}
-        <div className="search-container shadow mx-auto" style={{maxWidth: '700px'}}>
-          <form onSubmit={handleAnalyzeClick} className="d-flex flex-column gap-3">
-            <div className="d-flex gap-2">
+        {/* Input Area */}
+        <div className="search-container shadow mx-auto text-start" style={{maxWidth: '700px'}}>
+          <form onSubmit={handleAnalyzeClick} className="d-flex flex-column gap-4">
+            
+            {/* Step 1: Repository */}
+            <div>
+              <label className="form-label text-neon fw-bold mb-2 fs-5">1. Target Repository</label>
               <input 
                 type="url" 
-                className="form-control custom-input p-3" 
-                placeholder="Paste GitHub Repository URL (e.g. pallets/flask)" 
+                className="form-control custom-input p-3 fs-5 text-white" 
+                placeholder="https://github.com/username/repository" 
                 value={repoUrl} onChange={e => setRepoUrl(e.target.value)} required 
               />
+              <div className="text-gray mt-2 small">
+                Paste the full URL of the public GitHub project you want to contribute to.
+              </div>
             </div>
-            <div className="d-flex gap-2">
+
+            {/* Step 2: Skills */}
+            <div>
+              <label className="form-label text-neon fw-bold mb-2 fs-5">2. Your Developer Profile</label>
               <input 
                 type="text" 
-                className="form-control custom-input p-3" 
-                placeholder="Your Skills (e.g. Python, Beginner)" 
+                className="form-control custom-input p-3 fs-5 text-white" 
+                placeholder="e.g., HTML, CSS, intermediate React developer" 
                 value={userSkills} onChange={e => setUserSkills(e.target.value)} required 
               />
-              <button type="submit" className="btn neon-btn px-4" disabled={loading}>
-                {loading ? 'Analyzing...' : 'Find Path'}
-              </button>
+              <div className="text-gray mt-2 small">
+                Tell the AI your current skills so it can calculate your Confidence Score and find issues that match your level.
+              </div>
             </div>
+
+            <button type="submit" className="btn neon-btn py-3 fs-5 mt-2 fw-bold shadow-lg" disabled={loading}>
+              {loading ? (
+                <><div className="spinner-border spinner-border-sm me-2"></div> Generating Roadmap...</>
+              ) : (
+                'Generate Contribution Path'
+              )}
+            </button>
           </form>
-          {error && <div className="text-danger mt-3">{error}</div>}
+          {error && <div className="text-danger mt-4 text-center p-3 rounded" style={{backgroundColor: 'rgba(255,0,0,0.1)'}}>{error}</div>}
         </div>
 
         {/* Loading */}
