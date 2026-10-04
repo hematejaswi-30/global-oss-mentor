@@ -40,7 +40,7 @@ def call_ai(payload):
         for model in FALLBACK_MODELS:
             url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={API_KEY}"
             try:
-                response = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=15)
+                response = requests.post(url, json=payload, headers={"Content-Type": "application/json"}, timeout=60)
                 if response.status_code == 200:
                     resp_data = response.json()
                     candidates = resp_data.get("candidates", [])
