@@ -46,19 +46,21 @@ def analyze():
     if not readme_content:
         return jsonify({"error": "Could not fetch README. Ensure URL is correct and public."}), 400
         
-    prompt = f"""You are a strict JSON-only data extraction API. You DO NOT output conversational text, bullet points, or markdown. You ONLY output raw, valid JSON.
+    prompt = f"""Read the README and the user's skills.
 
-Repository README:
-{readme_content[:10000]}
+README:
+{readme_content[:8000]}
 
-User Skills: {user_skills}
+USER SKILLS:
+{user_skills}
 
-Analyze the user's fit for this project. Output a single JSON object exactly matching this structure:
+You must format your response EXACTLY like this JSON example. Do not add any other words, no bullet points, and no introductions. Start immediately with {{.
+
 {{
-  "confidence_score": 75,
-  "summary": "Short 1-sentence summary.",
-  "gap_analysis": ["Skill gap 1", "Skill gap 2"],
-  "sprints": ["1. Setup step", "2. Discovery step", "3. Implementation step", "4. PR step"]
+  "confidence_score": 90,
+  "summary": "This is a web application.",
+  "gap_analysis": ["Learn React"],
+  "sprints": ["Fork repo", "Run npm install", "Fix UI", "Submit PR"]
 }}
 """
 
