@@ -219,9 +219,13 @@ function App() {
               <div className="result-card p-4">
                 <h4 className="text-neon fw-bold mb-3">PR Simulator (Etiquette Check)</h4>
                 <form onSubmit={handleJudgePR}>
-                  <input type="text" className="form-control custom-input mb-3" placeholder="PR Title" value={prTitle} onChange={e => setPrTitle(e.target.value)} required />
-                  <textarea className="form-control custom-input mb-3" rows="3" placeholder="PR Description" value={prBody} onChange={e => setPrBody(e.target.value)} required></textarea>
-                  <button className="btn neon-btn" type="submit" disabled={prLoading}>
+                  <label className="form-label text-neon fw-bold mb-2">Pull Request Title</label>
+                  <input type="text" className="form-control custom-input mb-4 p-3 fs-5 text-white" placeholder="e.g., Fix broken link in README" value={prTitle} onChange={e => setPrTitle(e.target.value)} required />
+                  
+                  <label className="form-label text-neon fw-bold mb-2">Pull Request Description</label>
+                  <textarea className="form-control custom-input mb-4 p-3 fs-5 text-white" rows="3" placeholder="Explain what you changed and why (e.g., 'This PR fixes the broken documentation link on the home page...')" value={prBody} onChange={e => setPrBody(e.target.value)} required></textarea>
+                  
+                  <button className="btn neon-btn py-3 px-5 fs-5 fw-bold" type="submit" disabled={prLoading}>
                     {prLoading ? 'Reviewing...' : 'Grade my PR'}
                   </button>
                 </form>
