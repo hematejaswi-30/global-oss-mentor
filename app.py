@@ -64,13 +64,20 @@ README CONTENT:
     }
 
     # 3. Call Gemini API
-    response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
-    
-    if response.status_code == 200:
-        result_text = response.json()["candidates"][0]["content"]["parts"][0]["text"]
-        return jsonify({"result": result_text})
-    else:
-        return jsonify({"error": f"API Error: {response.text}"}), 500
+    try:
+        response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
+        
+        if response.status_code == 200:
+            data = response.json()
+            try:
+                result_text = data["candidates"][0]["content"]["parts"][0]["text"]
+                return jsonify({"result": result_text})
+            except (KeyError, IndexError):
+                return jsonify({"error": f"API response was unexpected (possibly blocked by safety filters). Raw: {data}"}), 500
+        else:
+            return jsonify({"error": f"API Error: {response.text}"}), 500
+    except Exception as e:
+        return jsonify({"error": f"Server crash: {str(e)}"}), 500
 
 if __name__ == "__main__":
     print("Starting the Gemma 4 OSS Agent Server on http://127.0.0.1:5000")
