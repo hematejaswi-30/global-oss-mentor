@@ -105,6 +105,20 @@ body {
   padding: 0.3em 0.6em;
   border-radius: 12px;
 }
+.badge-clickable {
+  background-color: var(--accent-purple);
+  color: var(--text-white);
+  font-size: 0.85rem;
+  padding: 0.4em 0.8em;
+  border-radius: 12px;
+  border: 1px solid var(--border-purple);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.badge-clickable:hover {
+  border-color: var(--neon-green);
+  color: var(--neon-green);
+}
 
 /* Steps Bottom */
 .stepper-container {

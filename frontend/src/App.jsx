@@ -84,6 +84,10 @@ function App() {
     }
   };
 
+  const insertTemplate = () => {
+    setPrBody("## What does this PR do?\n- \n\n## Fixes Issue\nCloses #\n\n## Testing Instructions\n1. \n2. ");
+  };
+
   return (
     <div className="min-vh-100 d-flex flex-column position-relative">
       
@@ -225,11 +229,25 @@ function App() {
               <div className="result-card p-4">
                 <h4 className="text-neon fw-bold mb-3">PR Simulator (Etiquette Check)</h4>
                 <form onSubmit={handleJudgePR}>
+                  {/* PR Title Section */}
                   <label className="form-label text-neon fw-bold mb-2">Pull Request Title</label>
-                  <input type="text" className="form-control custom-input mb-4 p-3 fs-5 text-white" placeholder="e.g., Fix broken link in README" value={prTitle} onChange={e => setPrTitle(e.target.value)} required />
+                  <input type="text" className="form-control custom-input mb-3 p-3 fs-5 text-white" placeholder="e.g., Fix broken link in README" value={prTitle} onChange={e => setPrTitle(e.target.value)} required />
                   
-                  <label className="form-label text-neon fw-bold mb-2">Pull Request Description</label>
-                  <textarea className="form-control custom-input mb-4 p-3 fs-5 text-white" rows="3" placeholder="Explain what you changed and why (e.g., 'This PR fixes the broken documentation link on the home page...')" value={prBody} onChange={e => setPrBody(e.target.value)} required></textarea>
+                  {/* Suggestion Pills */}
+                  <div className="d-flex gap-2 mb-4 flex-wrap">
+                    <span className="badge-clickable" onClick={() => setPrTitle('Fix typo in README.md')}>Fix typo in README.md</span>
+                    <span className="badge-clickable" onClick={() => setPrTitle('Update dependency versions')}>Update dependency versions</span>
+                    <span className="badge-clickable" onClick={() => setPrTitle('Add user authentication')}>Add user authentication</span>
+                  </div>
+                  
+                  {/* PR Description Section */}
+                  <div className="d-flex justify-content-between align-items-end mb-2">
+                    <label className="form-label text-neon fw-bold mb-0">Pull Request Description</label>
+                    <span className="text-neon small fw-bold" style={{cursor: 'pointer', textDecoration: 'underline'}} onClick={insertTemplate}>
+                      + Insert Standard Template
+                    </span>
+                  </div>
+                  <textarea className="form-control custom-input mb-4 p-3 fs-5 text-white" rows="6" placeholder="Explain what you changed and why (e.g., 'This PR fixes the broken documentation link on the home page...')" value={prBody} onChange={e => setPrBody(e.target.value)} required></textarea>
                   
                   <button className="btn neon-btn py-3 px-5 fs-5 fw-bold" type="submit" disabled={prLoading}>
                     {prLoading ? 'Reviewing...' : 'Grade my PR'}
