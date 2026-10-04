@@ -28,7 +28,13 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ repo_url: repoUrl, user_skills: userSkills })
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        throw new Error("The server took too long to respond and timed out. Please try again.");
+      }
       if (!res.ok) throw new Error(data.error || 'Connection failed.');
       setResult(data);
     } catch (err) {
@@ -71,7 +77,14 @@ function App() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ pr_title: prTitle, pr_body: prBody })
       });
-      const data = await res.json();
+      const text = await res.text();
+      let data;
+      try {
+        data = JSON.parse(text);
+      } catch (e) {
+        setPrCritique(`**Error:** The server took too long to respond. Please try again.`);
+        return;
+      }
       if (res.ok) {
         setPrCritique(data.critique);
       } else {
