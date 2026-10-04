@@ -12,6 +12,8 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [githubUser, setGithubUser] = useState('');
+  const [inputUser, setInputUser] = useState('');
 
   const [prTitle, setPrTitle] = useState('');
   const [prBody, setPrBody] = useState('');
@@ -46,8 +48,10 @@ function App() {
   };
 
   const simulateLogin = () => {
+    if (!inputUser.trim()) return;
     setIsLoggingIn(true);
     setTimeout(() => {
+      setGithubUser(inputUser.trim());
       setIsLoggedIn(true);
       setIsLoggingIn(false);
       setShowAuthModal(false);
@@ -83,15 +87,25 @@ function App() {
           <div className="modal-custom text-center">
             <h3 className="fw-bold mb-3 text-white">GitHub Required</h3>
             <p className="text-gray mb-4">Please connect your GitHub account to analyze repositories and receive your customized mentorship plan.</p>
+            
+            <input 
+              type="text" 
+              className="form-control custom-input mb-4 p-3 text-center fs-5 text-white" 
+              placeholder="Enter your GitHub username" 
+              value={inputUser} 
+              onChange={e => setInputUser(e.target.value)} 
+              autoFocus
+            />
+
             <button 
               className="btn neon-btn w-100 py-3 mb-3 d-flex justify-content-center align-items-center fs-5" 
               onClick={simulateLogin} 
-              disabled={isLoggingIn}
+              disabled={isLoggingIn || !inputUser.trim()}
             >
               {isLoggingIn ? (
                 <><div className="spinner-border spinner-border-sm me-2"></div> Authenticating...</>
               ) : (
-                'Sign in with GitHub'
+                'Connect Account'
               )}
             </button>
             <button className="btn btn-link text-gray text-decoration-none" onClick={() => setShowAuthModal(false)}>
@@ -115,8 +129,8 @@ function App() {
         <div>
           {isLoggedIn ? (
             <div className="d-flex align-items-center gap-2">
-              <img src="https://github.com/identicons/hema.png" alt="Avatar" width="30" className="rounded-circle" />
-              <span className="fw-bold text-white">@hematejaswi</span>
+              <img src={`https://github.com/${githubUser}.png`} alt="Avatar" width="30" className="rounded-circle border border-secondary" />
+              <span className="fw-bold text-white">@{githubUser}</span>
             </div>
           ) : (
             <button className="btn github-btn" onClick={() => setShowAuthModal(true)}>
