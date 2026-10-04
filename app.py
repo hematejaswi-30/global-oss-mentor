@@ -7,7 +7,7 @@ load_dotenv()
 app = Flask(__name__)
 
 API_KEY = os.getenv("GOOGLE_API_KEY")
-API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemma-4:generateContent"
+API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemma-4-31b-it:generateContent"
 
 def fetch_github_readme(repo_url):
     """Fetches the README file from a public GitHub repository."""
