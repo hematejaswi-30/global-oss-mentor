@@ -65,11 +65,21 @@ Provide a friendly guide for this user formatted beautifully in Markdown. Includ
         if response.status_code == 200:
             resp_data = response.json()
             try:
-                text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
+                # Safely extract text
+                candidates = resp_data.get("candidates", [])
+                if not candidates:
+                    return jsonify({"error": "AI refused to answer. It might have been flagged by safety filters.", "raw": str(resp_data)}), 500
+                
+                parts = candidates[0].get("content", {}).get("parts", [])
+                if not parts:
+                    return jsonify({"error": "AI returned an empty response.", "raw": str(resp_data)}), 500
+                    
+                text = parts[0].get("text", "")
+                
                 # Just return the raw markdown! No more JSON parsing crashes.
                 return jsonify({"markdown": text})
-            except (KeyError, IndexError) as e:
-                return jsonify({"error": f"Failed to parse AI response.", "raw": str(resp_data)}), 500
+            except Exception as e:
+                return jsonify({"error": f"Failed to extract AI response.", "raw": str(resp_data)}), 500
         else:
             return jsonify({"error": f"API Error: {response.text}"}), 500
     except Exception as e:
@@ -94,7 +104,14 @@ Provide a short critique (2-3 paragraphs max). Tell them what is good and what i
         response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             resp_data = response.json()
-            text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
+            candidates = resp_data.get("candidates", [])
+            if not candidates:
+                return jsonify({"error": "AI refused to evaluate the PR.", "raw": str(resp_data)}), 500
+            parts = candidates[0].get("content", {}).get("parts", [])
+            if not parts:
+                return jsonify({"error": "AI returned an empty evaluation.", "raw": str(resp_data)}), 500
+                
+            text = parts[0].get("text", "")
             return jsonify({"critique": text})
         else:
             return jsonify({"error": f"API Error: {response.text}"}), 500

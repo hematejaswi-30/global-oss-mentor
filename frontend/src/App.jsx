@@ -72,7 +72,13 @@ function App() {
         body: JSON.stringify({ pr_title: prTitle, pr_body: prBody })
       });
       const data = await res.json();
-      if (res.ok) setPrCritique(data.critique);
+      if (res.ok) {
+        setPrCritique(data.critique);
+      } else {
+        setPrCritique(`**Error:** ${data.error || 'Failed to judge PR'}`);
+      }
+    } catch (err) {
+      setPrCritique(`**Error:** ${err.message}`);
     } finally {
       setPrLoading(false);
     }
