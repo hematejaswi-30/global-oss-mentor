@@ -10,16 +10,16 @@ function App() {
   
   // Fake GitHub Auth for Demo
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const [prTitle, setPrTitle] = useState('');
   const [prBody, setPrBody] = useState('');
   const [prLoading, setPrLoading] = useState(false);
   const [prCritique, setPrCritique] = useState('');
 
-  const handleAnalyze = async (e) => {
-    e.preventDefault();
+  const runAnalysis = async () => {
     setLoading(true); setError(''); setResult(null);
-
     try {
       const res = await fetch('/analyze', {
         method: 'POST',
@@ -34,6 +34,28 @@ function App() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleAnalyzeClick = (e) => {
+    e.preventDefault();
+    if (!isLoggedIn) {
+      setShowAuthModal(true);
+      return;
+    }
+    runAnalysis();
+  };
+
+  const simulateLogin = () => {
+    setIsLoggingIn(true);
+    setTimeout(() => {
+      setIsLoggedIn(true);
+      setIsLoggingIn(false);
+      setShowAuthModal(false);
+      // Auto-start analysis if they already typed something
+      if (repoUrl && userSkills) {
+        runAnalysis();
+      }
+    }, 1500);
   };
 
   const handleJudgePR = async (e) => {
@@ -53,7 +75,32 @@ function App() {
   };
 
   return (
-    <div className="min-vh-100 d-flex flex-column">
+    <div className="min-vh-100 d-flex flex-column position-relative">
+      
+      {/* Auth Modal Overlay */}
+      {showAuthModal && (
+        <div className="modal-overlay">
+          <div className="modal-custom text-center">
+            <h3 className="fw-bold mb-3 text-white">GitHub Required</h3>
+            <p className="text-gray mb-4">Please connect your GitHub account to analyze repositories and receive your customized mentorship plan.</p>
+            <button 
+              className="btn neon-btn w-100 py-3 mb-3 d-flex justify-content-center align-items-center fs-5" 
+              onClick={simulateLogin} 
+              disabled={isLoggingIn}
+            >
+              {isLoggingIn ? (
+                <><div className="spinner-border spinner-border-sm me-2"></div> Authenticating...</>
+              ) : (
+                'Sign in with GitHub'
+              )}
+            </button>
+            <button className="btn btn-link text-gray text-decoration-none" onClick={() => setShowAuthModal(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Navbar */}
       <nav className="navbar-custom d-flex justify-content-between align-items-center">
         <div className="d-flex align-items-center">
@@ -69,10 +116,10 @@ function App() {
           {isLoggedIn ? (
             <div className="d-flex align-items-center gap-2">
               <img src="https://github.com/identicons/hema.png" alt="Avatar" width="30" className="rounded-circle" />
-              <span className="fw-bold">@hematejaswi</span>
+              <span className="fw-bold text-white">@hematejaswi</span>
             </div>
           ) : (
-            <button className="btn github-btn" onClick={() => setIsLoggedIn(true)}>
+            <button className="btn github-btn" onClick={() => setShowAuthModal(true)}>
               Sign in with GitHub
             </button>
           )}
@@ -95,7 +142,7 @@ function App() {
 
         {/* Input Area (Replaces Dropdowns from Image) */}
         <div className="search-container shadow mx-auto" style={{maxWidth: '700px'}}>
-          <form onSubmit={handleAnalyze} className="d-flex flex-column gap-3">
+          <form onSubmit={handleAnalyzeClick} className="d-flex flex-column gap-3">
             <div className="d-flex gap-2">
               <input 
                 type="url" 
@@ -127,7 +174,7 @@ function App() {
           </div>
         )}
 
-        {/* Results Cards (Styled like the reference image) */}
+        {/* Results Cards */}
         {result && (
           <div className="row g-4 mt-5 text-start">
             <div className="col-12 mt-4">

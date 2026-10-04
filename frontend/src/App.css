@@ -125,3 +125,24 @@ body {
   font-weight: bold;
   margin-right: 10px;
 }
+
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.modal-custom {
+  background-color: var(--bg-dark);
+  border: 1px solid var(--border-purple);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  max-width: 450px;
+  width: 90%;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
