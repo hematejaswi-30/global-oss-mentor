@@ -130,30 +130,9 @@ function App() {
         {/* Results Cards (Styled like the reference image) */}
         {result && (
           <div className="row g-4 mt-5 text-start">
-            
-            {/* Sprints acting as "Issues" */}
-            {result.sprints && result.sprints.map((sprint, i) => (
-              <div className="col-md-4" key={i}>
-                <div className="result-card p-4 h-100">
-                  <div className="text-gray small mb-2 d-flex align-items-center gap-2">
-                    <span className="badge-purple">Sprint {i+1}</span>
-                  </div>
-                  <h5 className="fw-bold text-white mb-4">{sprint}</h5>
-                  <div className="d-flex gap-2 mt-auto">
-                    <span className="badge-neon">good first issue</span>
-                    <span className="badge-purple">Actionable</span>
-                  </div>
-                </div>
-              </div>
-            ))}
-
             <div className="col-12 mt-4">
               <div className="result-card p-4 border-success">
-                <h4 className="text-neon fw-bold mb-3">Gap Analysis (Confidence: {result.confidence_score}%)</h4>
-                <p className="text-white">{result.summary}</p>
-                <ul className="text-gray">
-                  {result.gap_analysis && result.gap_analysis.map((gap, i) => <li key={i}>{gap}</li>)}
-                </ul>
+                <div className="text-white" dangerouslySetInnerHTML={{ __html: window.marked ? window.marked.parse(result.markdown || '') : (result.markdown || '') }}></div>
               </div>
             </div>
 

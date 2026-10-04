@@ -46,49 +46,30 @@ def analyze():
     if not readme_content:
         return jsonify({"error": "Could not fetch README. Ensure URL is correct and public."}), 400
         
-    prompt = f"""Read the README and the user's skills.
+    prompt = f"""You are a helpful Open-Source Mentor.
+Read the repository README and the user's skills.
 
-README:
-{readme_content[:8000]}
+README: {readme_content[:10000]}
+USER SKILLS: {user_skills}
 
-USER SKILLS:
-{user_skills}
-
-You must format your response EXACTLY like this JSON example. Do not add any other words, no bullet points, and no introductions. Start immediately with {{.
-
-{{
-  "confidence_score": 90,
-  "summary": "This is a web application.",
-  "gap_analysis": ["Learn React"],
-  "sprints": ["Fork repo", "Run npm install", "Fix UI", "Submit PR"]
-}}
+Provide a friendly guide for this user formatted beautifully in Markdown. Include:
+1. **Confidence Score:** A percentage match based on their skills.
+2. **Gap Analysis:** What they need to learn to contribute here.
+3. **Hackathon Sprints:** A 4-step plan to get started.
 """
 
-    payload = {
-        "contents": [{"role": "user", "parts": [{"text": prompt}]}],
-        "generationConfig": {
-            "responseMimeType": "application/json"
-        }
-    }
+    payload = {"contents": [{"role": "user", "parts": [{"text": prompt}]}]}
     
     try:
         response = requests.post(f"{API_URL}?key={API_KEY}", json=payload, headers={"Content-Type": "application/json"})
         if response.status_code == 200:
             resp_data = response.json()
             try:
-                import re
                 text = resp_data["candidates"][0]["content"]["parts"][0]["text"]
-                
-                # Robust JSON extraction: Find everything between the first { and last }
-                match = re.search(r'\{.*\}', text, re.DOTALL)
-                if not match:
-                    return jsonify({"error": f"AI outputted text instead of data: {text[:100]}..."}), 500
-                
-                json_str = match.group(0)
-                parsed_json = json.loads(json_str)
-                return jsonify(parsed_json)
-            except (KeyError, IndexError, json.JSONDecodeError) as e:
-                return jsonify({"error": f"Failed to parse AI response. Error: {str(e)}", "raw": text}), 500
+                # Just return the raw markdown! No more JSON parsing crashes.
+                return jsonify({"markdown": text})
+            except (KeyError, IndexError) as e:
+                return jsonify({"error": f"Failed to parse AI response.", "raw": str(resp_data)}), 500
         else:
             return jsonify({"error": f"API Error: {response.text}"}), 500
     except Exception as e:
